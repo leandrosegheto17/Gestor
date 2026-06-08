@@ -1,0 +1,130 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Enums ───────────────────────────────────────────────
+
+enum Senioridade {
+  JUNIOR
+  PLENO
+  SENIOR
+  STAFF
+  PRINCIPAL
+}
+
+enum TipoFeedback {
+  POSITIVO
+  CONSTRUTIVO
+  NEUTRO
+}
+
+enum FonteFeedback {
+  GESTOR
+  LIDER_DIRETO
+  COLEGA
+  CLIENTE
+}
+
+enum TipoOcorrencia {
+  POSITIVA
+  NEGATIVA
+}
+
+enum StatusMovimentacao {
+  PENDENTE
+  APROVADA
+  APLICADA
+}
+
+enum StatusFerias {
+  AGENDADA
+  EM_CURSO
+  CONCLUIDA
+}
+
+// ─── Modelos ──────────────────────────────────────────────
+
+model Projeto {
+  id            String        @id @default(cuid())
+  nome          String
+  tecnologia    String
+  criadoEm     DateTime      @default(now())
+  atualizadoEm  DateTime      @updatedAt
+  colaboradores Colaborador[]
+}
+
+model Colaborador {
+  id            String               @id @default(cuid())
+  nome          String
+  usuario       String               @unique
+  funcao        String
+  senioridade   Senioridade
+  ativo         Boolean              @default(true)
+  projetoId     String?
+  projeto       Projeto?             @relation(fields: [projetoId], references: [id])
+  liderId       String?
+  lider         Colaborador?         @relation("LiderSubordinados", fields: [liderId], references: [id])
+  subordinados  Colaborador[]        @relation("LiderSubordinados")
+  feedbacks     Feedback[]
+  ocorrencias   Ocorrencia[]
+  movimentacoes MovimentacaoSalarial[]
+  ferias        Ferias[]
+  criadoEm     DateTime             @default(now())
+  atualizadoEm  DateTime             @updatedAt
+}
+
+model Feedback {
+  id            String        @id @default(cuid())
+  colaboradorId String
+  colaborador   Colaborador   @relation(fields: [colaboradorId], references: [id])
+  data          DateTime
+  tipo          TipoFeedback
+  descricao     String
+  fonte         FonteFeedback
+  criadoEm     DateTime      @default(now())
+  atualizadoEm  DateTime      @updatedAt
+}
+
+model Ocorrencia {
+  id            String         @id @default(cuid())
+  colaboradorId String
+  colaborador   Colaborador    @relation(fields: [colaboradorId], references: [id])
+  data          DateTime
+  tipo          TipoOcorrencia
+  descricao     String
+  gravidade     Int
+  criadoEm     DateTime       @default(now())
+  atualizadoEm  DateTime       @updatedAt
+}
+
+model MovimentacaoSalarial {
+  id              String             @id @default(cuid())
+  colaboradorId   String
+  colaborador     Colaborador        @relation(fields: [colaboradorId], references: [id])
+  salarioAtual    Decimal            @db.Decimal(10, 2)
+  fatorReajuste   Decimal            @db.Decimal(5, 2)
+  salarioProposto Decimal            @db.Decimal(10, 2)
+  status          StatusMovimentacao @default(PENDENTE)
+  observacoes     String?
+  cicloAno        Int
+  cicloMes        Int
+  criadoEm       DateTime           @default(now())
+  atualizadoEm    DateTime           @updatedAt
+}
+
+model Ferias {
+  id            String       @id @default(cuid())
+  colaboradorId String
+  colaborador   Colaborador  @relation(fields: [colaboradorId], references: [id])
+  dataInicio    DateTime
+  dataFim       DateTime
+  status        StatusFerias @default(AGENDADA)
+  observacoes   String?
+  criadoEm     DateTime     @default(now())
+  atualizadoEm  DateTime     @updatedAt
+}

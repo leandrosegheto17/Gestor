@@ -1,0 +1,166 @@
+================================================================================
+GESTOR DE TIMES — DESCRIÇÃO INICIAL DO PROJETO
+================================================================================
+Data: 2026-06-08
+Versão: 0.1 (rascunho inicial, base para PRD.md)
+================================================================================
+
+
+1. NOME E PROPÓSITO
+-------------------
+Gestor de Times é uma aplicação web local voltada para gestores de tecnologia
+que precisam centralizar, em uma única ferramenta, todas as informações
+operacionais e estratégicas relacionadas ao seu time.
+
+O sistema foi concebido para gerenciar times de 40 ou mais colaboradores,
+eliminando a dependência de planilhas dispersas e ferramentas desconectadas.
+
+
+2. PROBLEMA RESOLVIDO
+---------------------
+Gestores de times médios e grandes frequentemente enfrentam os seguintes
+desafios no dia a dia:
+
+- Informações de colaboradores espalhadas em múltiplas planilhas e sistemas;
+- Falta de visibilidade estruturada sobre a hierarquia e o organograma do time;
+- Ausência de histórico centralizado de feedbacks e ocorrências por colaborador;
+- Dificuldade em simular e documentar propostas de movimentação salarial;
+- Controle manual e propenso a erros sobre períodos de férias;
+- Falta de indicadores consolidados para tomada de decisão sobre o time.
+
+O Gestor de Times resolve esses problemas oferecendo um painel único, local e
+seguro, onde todas essas informações coexistem e se relacionam.
+
+
+3. USUÁRIO ALVO
+---------------
+- Perfil: Gestor de tecnologia (engenharia de software, dados ou produto)
+- Uso: Individual, com autenticação por usuário e senha mestre (único par de
+  credenciais, configurado via variável de ambiente no arquivo .env)
+- Acesso: Exclusivo do gestor; dados sensíveis (salários, ocorrências) ficam
+  apenas na máquina local, protegidos por login
+- Frequência de uso: Diária a semanal, conforme ciclos de gestão do time
+
+
+4. MÓDULOS DO SISTEMA
+---------------------
+
+4.1 CADASTRO DE PROJETOS
+   Permite registrar os projetos em andamento na área. Cada projeto possui:
+   - Nome do projeto
+   - Tecnologia principal utilizada
+   Serve como referência para associação de colaboradores a projetos.
+
+4.2 CADASTRO DE COLABORADORES
+   Cadastro completo de cada membro do time com os campos:
+   - Nome / usuário (login corporativo)
+   - Líder direto (referência a outro colaborador cadastrado)
+   - Função / cargo
+   - Nível de senioridade (ex: Júnior, Pleno, Sênior, Staff, Principal)
+   - Projeto associado
+   Suporta múltiplos colaboradores por projeto e hierarquia de liderança.
+
+4.3 VISUALIZAÇÃO DO ORGANOGRAMA
+   Exibição visual da hierarquia do time em formato de árvore (organograma),
+   gerado automaticamente a partir dos vínculos entre colaboradores e seus
+   líderes diretos cadastrados no módulo anterior.
+
+4.4 CONTROLE DE FEEDBACKS
+   Registro e histórico de feedbacks por colaborador:
+   - Data do feedback
+   - Tipo (positivo / construtivo / neutro)
+   - Descrição livre
+   - Fonte (gestor, líder direto, colega, cliente)
+   Permite acompanhar a evolução individual ao longo do tempo.
+
+4.5 GESTÃO DE OCORRÊNCIAS
+   Registro de eventos relevantes associados a colaboradores:
+   - Ocorrências positivas (reconhecimentos, entregas excepcionais, prêmios)
+   - Ocorrências negativas (advertências, atrasos recorrentes, incidentes)
+   - Data, descrição e gravidade/relevância
+   Serve como base histórica para avaliações e decisões de carreira.
+
+4.6 PAINEL DE INDICADORES
+   Dashboard com métricas consolidadas do time, incluindo:
+   - Distribuição por senioridade
+   - Distribuição por projeto
+   - Distribuição por função
+   - Total de colaboradores ativos
+   - Resumo de feedbacks e ocorrências no período
+   - Colaboradores com férias próximas ou vencidas
+   Visualizações em gráficos e tabelas resumidas.
+
+4.7 AVALIAÇÃO DE MOVIMENTAÇÃO SALARIAL
+   Ferramenta de simulação para planejamento de reajustes:
+   - Colaborador
+   - Salário atual
+   - Fator de reajuste (percentual ou valor absoluto)
+   - Salário proposto (calculado automaticamente)
+   - Status da proposta (pendente, aprovada, aplicada)
+   Permite salvar diferentes cenários de movimentação.
+
+4.8 PLANILHA SALARIAL COM PROPOSTA DE MOVIMENTAÇÃO
+   Visão consolidada em formato tabular (tipo spreadsheet) de todo o time
+   com os dados salariais e as propostas de movimentação geradas no módulo
+   anterior. Permite exportação ou impressão para uso em reuniões de C-level
+   ou RH.
+
+4.9 CONTROLE DE FÉRIAS
+   Registro e acompanhamento dos períodos de férias do time:
+   - Colaborador
+   - Data de início e fim das férias
+   - Status (agendado, em curso, concluído)
+   - Observações
+   Visualização em calendário ou lista para identificar sobreposições e
+   ausências simultâneas.
+
+
+5. STACK TECNOLÓGICA
+--------------------
+- Framework:  Next.js 14+ com TypeScript (fullstack — frontend + API Routes)
+- Banco de dados: PostgreSQL (instância local em container Docker)
+- ORM:        Prisma
+- Autenticação: NextAuth.js com provider de credenciais (usuário/senha mestre via .env)
+- Estilo:     Tailwind CSS + shadcn/ui (componentes acessíveis e modernos)
+- Gráficos:   Recharts (para o painel de indicadores)
+- Organograma: react-organizational-chart ou d3-hierarchy
+- Runtime:    Node.js 20+
+- Gerenciador de pacotes: npm ou pnpm
+- Containers: Docker + Docker Compose
+- Configuração: variáveis de ambiente via arquivo .env (credenciais e string de conexão)
+
+
+6. MODELO DE EXECUÇÃO
+---------------------
+- A aplicação é executada localmente via Docker: `docker compose up`
+- Dois containers orquestrados pelo Docker Compose:
+    app  — Next.js na porta 3000
+    db   — PostgreSQL na porta 5432
+- Não requer deploy em servidor externo ou cloud
+- Os dados são persistidos no volume Docker do PostgreSQL (sem exposição à internet)
+- O acesso à aplicação é protegido por login (usuário e senha mestre definidos no .env)
+- Sem dependência de serviços externos em tempo de execução
+
+
+7. REPOSITÓRIO
+--------------
+- Plataforma: GitHub
+- URL:        https://github.com/leandrosegheto17/Gestor
+- Branch principal: main
+- O repositório conterá o código-fonte completo, incluindo Dockerfile,
+  docker-compose.yml e arquivo .env.example (sem valores reais de senha)
+
+
+8. PRÓXIMOS PASSOS
+------------------
+Com base nesta descrição, os próximos artefatos a serem criados são:
+
+  [ ] PRD.md       — Documento de Requisitos do Produto com especificação
+                     funcional detalhada, critérios de aceite e fluxos de dados
+  [ ] CLAUDE.md    — Guia de desenvolvimento para o assistente de IA: stack,
+                     convenções de código, estrutura de pastas, comandos úteis
+
+
+================================================================================
+FIM DO DOCUMENTO
+================================================================================
