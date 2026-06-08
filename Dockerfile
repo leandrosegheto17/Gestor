@@ -14,7 +14,8 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-RUN npx prisma generate
+# Usar o Prisma instalado no projeto (não o npx que baixa a versão mais recente)
+RUN node_modules/.bin/prisma generate
 RUN npm run build
 
 # Production image, copy all the files and run next
@@ -38,6 +39,10 @@ COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
 COPY --from=builder --chown=nextjs:nodejs /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=builder --chown=nextjs:nodejs /app/node_modules/@prisma ./node_modules/@prisma
 
+# Incluir o Prisma CLI no runner para aplicar migrations na inicialização
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules/prisma ./node_modules/prisma
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules/.bin/prisma ./node_modules/.bin/prisma
+
 USER nextjs
 
 EXPOSE 3000
@@ -45,4 +50,5 @@ EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-CMD ["node", "server.js"]
+# Aplica migrations automaticamente e depois inicia o servidor
+CMD ["sh", "-c", "node_modules/.bin/prisma migrate deploy && node server.js"]
