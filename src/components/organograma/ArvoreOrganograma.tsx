@@ -1,7 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { Tree, TreeNode } from "react-organizational-chart"
+import { useEffect, useState, type ComponentType } from "react"
 import { Badge } from "@/components/ui/badge"
 import { GitBranch } from "lucide-react"
 
@@ -11,6 +10,24 @@ interface NoColaborador {
   funcao: string
   senioridade: string
   subordinados: NoColaborador[]
+}
+
+// Tipos mínimos para react-organizational-chart (sem importar o módulo no servidor)
+type TreeProps = {
+  label: React.ReactNode
+  lineWidth?: string
+  lineColor?: string
+  lineBorderRadius?: string
+  nodePadding?: string
+  children?: React.ReactNode
+}
+type TreeNodeProps = {
+  label: React.ReactNode
+  children?: React.ReactNode
+}
+interface BibTree {
+  Tree: ComponentType<TreeProps>
+  TreeNode: ComponentType<TreeNodeProps>
 }
 
 const SENIORIDADE_LABELS: Record<string, string> = {
@@ -46,12 +63,20 @@ function CartaoNo({ no }: { no: NoColaborador }) {
   )
 }
 
-function NosColaborador({ nos }: { nos: NoColaborador[] }) {
+function NosColaborador({
+  nos,
+  TreeNode,
+}: {
+  nos: NoColaborador[]
+  TreeNode: ComponentType<TreeNodeProps>
+}) {
   return (
     <>
       {nos.map((no) => (
         <TreeNode key={no.id} label={<CartaoNo no={no} />}>
-          {no.subordinados.length > 0 && <NosColaborador nos={no.subordinados} />}
+          {no.subordinados.length > 0 && (
+            <NosColaborador nos={no.subordinados} TreeNode={TreeNode} />
+          )}
         </TreeNode>
       ))}
     </>
@@ -62,6 +87,17 @@ export function ArvoreOrganograma() {
   const [raizes, setRaizes] = useState<NoColaborador[]>([])
   const [carregando, setCarregando] = useState(true)
   const [erro, setErro] = useState("")
+  const [bib, setBib] = useState<BibTree | null>(null)
+
+  useEffect(() => {
+    // Importar a lib somente no browser — ela acessa `document` no load
+    import("react-organizational-chart").then((mod) => {
+      setBib({
+        Tree: mod.Tree as ComponentType<TreeProps>,
+        TreeNode: mod.TreeNode as ComponentType<TreeNodeProps>,
+      })
+    })
+  }, [])
 
   useEffect(() => {
     async function buscar() {
@@ -79,7 +115,7 @@ export function ArvoreOrganograma() {
     buscar()
   }, [])
 
-  if (carregando) {
+  if (carregando || !bib) {
     return (
       <div className="flex items-center justify-center py-16 text-muted-foreground">
         Carregando organograma...
@@ -104,6 +140,7 @@ export function ArvoreOrganograma() {
     )
   }
 
+  const { Tree, TreeNode } = bib
   const raizVirtual = raizes.length > 1
 
   return (
@@ -121,7 +158,7 @@ export function ArvoreOrganograma() {
           lineBorderRadius="6px"
           nodePadding="8px"
         >
-          <NosColaborador nos={raizes} />
+          <NosColaborador nos={raizes} TreeNode={TreeNode} />
         </Tree>
       ) : (
         <Tree
@@ -132,7 +169,7 @@ export function ArvoreOrganograma() {
           nodePadding="8px"
         >
           {raizes[0].subordinados.length > 0 && (
-            <NosColaborador nos={raizes[0].subordinados} />
+            <NosColaborador nos={raizes[0].subordinados} TreeNode={TreeNode} />
           )}
         </Tree>
       )}

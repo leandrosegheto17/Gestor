@@ -1,9 +1,4 @@
-import dynamic from "next/dynamic"
-
-const ArvoreOrganograma = dynamic(
-  () => import("@/components/organograma/ArvoreOrganograma").then((m) => m.ArvoreOrganograma),
-  { ssr: false, loading: () => <p className="text-sm text-muted-foreground">Carregando organograma...</p> }
-)
+import { ArvoreOrganograma } from "@/components/organograma/ArvoreOrganograma"
 
 export default function PaginaOrganograma() {
   return (
