@@ -513,10 +513,9 @@ export function GerenciadorFerias() {
                         />
                         <span className="font-medium">{f.colaborador.nome}</span>
                         {overlap && (
-                          <AlertTriangle
-                            className="h-3.5 w-3.5 text-orange-500"
-                            title="Sobreposição com outro colaborador"
-                          />
+                          <span title="Sobreposição com outro colaborador">
+                            <AlertTriangle className="h-3.5 w-3.5 text-orange-500" />
+                          </span>
                         )}
                       </div>
                     </TableCell>
