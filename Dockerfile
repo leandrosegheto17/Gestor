@@ -39,9 +39,13 @@ COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
 COPY --from=builder --chown=nextjs:nodejs /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=builder --chown=nextjs:nodejs /app/node_modules/@prisma ./node_modules/@prisma
 
-# Incluir o Prisma CLI no runner para aplicar migrations na inicialização
+# Incluir o Prisma CLI e ts-node para migrations/seed
 COPY --from=builder --chown=nextjs:nodejs /app/node_modules/prisma ./node_modules/prisma
 COPY --from=builder --chown=nextjs:nodejs /app/node_modules/.bin/prisma ./node_modules/.bin/prisma
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules/ts-node ./node_modules/ts-node
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules/.bin/ts-node ./node_modules/.bin/ts-node
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules/typescript ./node_modules/typescript
+COPY --from=builder --chown=nextjs:nodejs /app/tsconfig.json ./tsconfig.json
 
 USER nextjs
 
@@ -50,5 +54,5 @@ EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-# Aplica migrations automaticamente e depois inicia o servidor
-CMD ["sh", "-c", "node_modules/.bin/prisma migrate deploy && node server.js"]
+# Sincroniza schema com o banco automaticamente e depois inicia o servidor
+CMD ["sh", "-c", "node_modules/.bin/prisma db push --skip-generate && node server.js"]
