@@ -14,7 +14,6 @@ import {
   Calculator,
   Award,
   Palmtree,
-  TrendingUp,
   ChevronDown,
   ChevronRight,
 } from "lucide-react"
@@ -35,15 +34,8 @@ function filhoAtivo(filho: ItemMenu, pathname: string): boolean {
 }
 
 const itensMenu: ItemMenu[] = [
-  {
-    titulo: "Métricas",
-    href: "/metricas",
-    icone: TrendingUp,
-    filhos: [
-      { titulo: "Indicadores",         href: "/",           icone: LayoutDashboard },
-      { titulo: "Ranking de Desempenho", href: "/desempenho", icone: Award },
-    ],
-  },
+  { titulo: "Indicadores",           href: "/",            icone: LayoutDashboard },
+  { titulo: "Ranking de Desempenho", href: "/desempenho",  icone: Award },
   {
     titulo: "Projetos",
     href: "/projetos",
