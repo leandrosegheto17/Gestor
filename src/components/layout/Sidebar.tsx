@@ -14,6 +14,7 @@ import {
   Calculator,
   Award,
   Palmtree,
+  TrendingUp,
   ChevronDown,
   ChevronRight,
 } from "lucide-react"
@@ -27,21 +28,26 @@ interface ItemMenu {
   filhos?: ItemMenu[]
 }
 
+// "/" precisa de comparação exata — startsWith("/") seria sempre true
+function filhoAtivo(filho: ItemMenu, pathname: string): boolean {
+  if (filho.href === "/") return pathname === "/"
+  return pathname.startsWith(filho.href)
+}
+
 const itensMenu: ItemMenu[] = [
   {
-    titulo: "Indicadores",
-    href: "/",
-    icone: LayoutDashboard,
+    titulo: "Métricas",
+    href: "/metricas",
+    icone: TrendingUp,
+    filhos: [
+      { titulo: "Indicadores",         href: "/",           icone: LayoutDashboard },
+      { titulo: "Ranking de Desempenho", href: "/desempenho", icone: Award },
+    ],
   },
   {
     titulo: "Projetos",
     href: "/projetos",
     icone: FolderKanban,
-  },
-  {
-    titulo: "Colaboradores",
-    href: "/colaboradores",
-    icone: Users,
   },
   {
     titulo: "Organograma",
@@ -59,47 +65,27 @@ const itensMenu: ItemMenu[] = [
     icone: AlertTriangle,
   },
   {
-    titulo: "Salário",
-    href: "/salario",
-    icone: DollarSign,
+    titulo: "Pessoas",
+    href: "/pessoas",
+    icone: Users,
     filhos: [
-      {
-        titulo: "Movimentações",
-        href: "/salario/movimentacoes",
-        icone: DollarSign,
-      },
-      {
-        titulo: "Planilha",
-        href: "/salario/planilha",
-        icone: FileSpreadsheet,
-      },
-      {
-        titulo: "Custo por Projeto",
-        href: "/salario/custos",
-        icone: Calculator,
-      },
+      { titulo: "Colaboradores",        href: "/colaboradores",         icone: Users },
+      { titulo: "Férias",               href: "/ferias",                icone: Palmtree },
+      { titulo: "Movimentações Salariais", href: "/salario/movimentacoes", icone: DollarSign },
+      { titulo: "Planilha Salarial",    href: "/salario/planilha",      icone: FileSpreadsheet },
+      { titulo: "Custo por Projeto",    href: "/salario/custos",        icone: Calculator },
     ],
-  },
-  {
-    titulo: "Desempenho",
-    href: "/desempenho",
-    icone: Award,
-  },
-  {
-    titulo: "Férias",
-    href: "/ferias",
-    icone: Palmtree,
   },
 ]
 
 function ItemMenuSidebar({ item }: { item: ItemMenu }) {
   const pathname = usePathname()
   const [aberto, setAberto] = useState(
-    item.filhos?.some((filho) => pathname.startsWith(filho.href)) ?? false
+    item.filhos?.some((filho) => filhoAtivo(filho, pathname)) ?? false
   )
 
   const ativo = item.filhos
-    ? item.filhos.some((filho) => pathname.startsWith(filho.href))
+    ? item.filhos.some((filho) => filhoAtivo(filho, pathname))
     : pathname === item.href
 
   if (item.filhos) {
@@ -130,7 +116,7 @@ function ItemMenuSidebar({ item }: { item: ItemMenu }) {
                 href={filho.href}
                 className={cn(
                   "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-                  pathname === filho.href
+                  filhoAtivo(filho, pathname)
                     ? "bg-primary text-primary-foreground"
                     : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
                 )}
