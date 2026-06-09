@@ -11,6 +11,8 @@ import {
   AlertTriangle,
   DollarSign,
   FileSpreadsheet,
+  Calculator,
+  Award,
   Palmtree,
   ChevronDown,
   ChevronRight,
@@ -71,7 +73,17 @@ const itensMenu: ItemMenu[] = [
         href: "/salario/planilha",
         icone: FileSpreadsheet,
       },
+      {
+        titulo: "Custo por Projeto",
+        href: "/salario/custos",
+        icone: Calculator,
+      },
     ],
+  },
+  {
+    titulo: "Desempenho",
+    href: "/desempenho",
+    icone: Award,
   },
   {
     titulo: "Férias",

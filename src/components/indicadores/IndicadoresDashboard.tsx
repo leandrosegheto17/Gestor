@@ -344,7 +344,7 @@ export function IndicadoresDashboard() {
             <SemDados />
           ) : (
             <ResponsiveContainer width="100%" height={280}>
-              <LineChart data={feedbacksPorMes} margin={{ top: 4, right: 16, left: 0, bottom: 32 }}>
+              <LineChart data={feedbacksPorMes} margin={{ top: 8, right: 16, left: 0, bottom: 36 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                 <XAxis
                   dataKey="mes"
@@ -358,6 +358,9 @@ export function IndicadoresDashboard() {
                 <YAxis tick={{ fontSize: 11 }} tickLine={false} axisLine={false} allowDecimals={false} />
                 <Tooltip content={<TooltipPersonalizado />} />
                 <Legend
+                  verticalAlign="top"
+                  align="right"
+                  wrapperStyle={{ paddingBottom: 8 }}
                   formatter={(value) => <span className="text-xs">{value}</span>}
                   iconType="circle"
                   iconSize={8}
@@ -400,7 +403,7 @@ export function IndicadoresDashboard() {
             <SemDados />
           ) : (
             <ResponsiveContainer width="100%" height={280}>
-              <BarChart data={ocorrenciasPorMes} margin={{ top: 4, right: 16, left: 0, bottom: 32 }}>
+              <BarChart data={ocorrenciasPorMes} margin={{ top: 8, right: 16, left: 0, bottom: 36 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                 <XAxis
                   dataKey="mes"
@@ -414,6 +417,9 @@ export function IndicadoresDashboard() {
                 <YAxis tick={{ fontSize: 11 }} tickLine={false} axisLine={false} allowDecimals={false} />
                 <Tooltip content={<TooltipPersonalizado />} cursor={{ fill: "hsl(var(--muted))" }} />
                 <Legend
+                  verticalAlign="top"
+                  align="right"
+                  wrapperStyle={{ paddingBottom: 8 }}
                   formatter={(value) => <span className="text-xs">{value}</span>}
                   iconType="circle"
                   iconSize={8}
